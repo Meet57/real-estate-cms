@@ -68,6 +68,9 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    properties: Property;
+    amenities: Amenity;
+    messages: Message;
     media: Media;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -76,6 +79,9 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    properties: PropertiesSelect<false> | PropertiesSelect<true>;
+    amenities: AmenitiesSelect<false> | AmenitiesSelect<true>;
+    messages: MessagesSelect<false> | MessagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -119,6 +125,10 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
+  name: string;
+  phone?: string | null;
+  role: 'buyer' | 'seller' | 'admin';
+  profileImage?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -158,6 +168,50 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "properties".
+ */
+export interface Property {
+  id: string;
+  title: string;
+  description?: string | null;
+  price: number;
+  location: string;
+  propertyType: 'apartment' | 'house' | 'condo' | 'land';
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  size?: number | null;
+  amenities?: (string | Amenity)[] | null;
+  images?: (string | Media)[] | null;
+  postedBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "amenities".
+ */
+export interface Amenity {
+  id: string;
+  name: string;
+  icon?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages".
+ */
+export interface Message {
+  id: string;
+  sender: string | User;
+  receiver: string | User;
+  property?: (string | null) | Property;
+  messageText: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -166,6 +220,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: string | User;
+      } | null)
+    | ({
+        relationTo: 'properties';
+        value: string | Property;
+      } | null)
+    | ({
+        relationTo: 'amenities';
+        value: string | Amenity;
+      } | null)
+    | ({
+        relationTo: 'messages';
+        value: string | Message;
       } | null)
     | ({
         relationTo: 'media';
@@ -218,6 +284,10 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
+  role?: T;
+  profileImage?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -234,6 +304,47 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "properties_select".
+ */
+export interface PropertiesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  price?: T;
+  location?: T;
+  propertyType?: T;
+  bedrooms?: T;
+  bathrooms?: T;
+  size?: T;
+  amenities?: T;
+  images?: T;
+  postedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "amenities_select".
+ */
+export interface AmenitiesSelect<T extends boolean = true> {
+  name?: T;
+  icon?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages_select".
+ */
+export interface MessagesSelect<T extends boolean = true> {
+  sender?: T;
+  receiver?: T;
+  property?: T;
+  messageText?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

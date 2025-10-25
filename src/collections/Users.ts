@@ -1,13 +1,48 @@
 import type { CollectionConfig } from 'payload'
 
-export const Users: CollectionConfig = {
+const Users: CollectionConfig = {
   slug: 'users',
+  auth: true, // enables login, register, JWT
   admin: {
-    useAsTitle: 'email',
+    useAsTitle: 'name',
   },
-  auth: true,
+  access: {
+    read: ({ req: { user } }) => !!user,
+    create: ({ req: { user } }) => !!user && user.role !== 'admin', // only non-admins can register themselves
+    update: ({ req: { user }, id }) => {
+      if (!user) return false
+      if (user.role === 'admin') return true // admins can update anyone
+      return user.id === id // others can update themselves
+    },
+    delete: ({ req: { user } }) => !!user && user.role === 'admin', // only admins can delete
+  },
   fields: [
-    // Email added by default
-    // Add more fields as needed
+    {
+      name: 'name',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'phone',
+      type: 'text',
+    },
+    {
+      name: 'role',
+      type: 'select',
+      required: true,
+      defaultValue: 'buyer',
+      options: [
+        { label: 'Buyer', value: 'buyer' },
+        { label: 'Seller', value: 'seller' },
+        { label: 'Admin', value: 'admin' },
+      ],
+    },
+    {
+      name: 'profileImage',
+      type: 'upload',
+      relationTo: 'media',
+    },
   ],
 }
+
+export default Users
