@@ -18,11 +18,14 @@ export default function Navbar() {
 
         {user ? (
           <>
-            {user.role === 'seller' && (
-              <Link href="/messages" className="hover:text-gray-300">
-                Messages
+            {(user.role === 'seller' || user.role === 'admin') && (
+              <Link href="/dashboard" className="hover:text-gray-300">
+                Dashboard
               </Link>
             )}
+            <Link href="/messages" className="hover:text-gray-300">
+              Messages
+            </Link>
             <span className="text-sm text-gray-300">Hi, {user.name}</span>
             <button
               onClick={logout}

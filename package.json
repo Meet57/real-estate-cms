@@ -27,14 +27,14 @@
     "cross-env": "^7.0.3",
     "dotenv": "16.4.7",
     "graphql": "^16.8.1",
-    "next": "15.4.4",
+    "next": "^15.5.6",
     "payload": "3.61.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "sharp": "0.34.2"
   },
   "devDependencies": {
-    "@playwright/test": "1.54.1",
+    "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4.1.16",
     "@testing-library/react": "16.3.0",
     "@types/node": "^22.5.4",

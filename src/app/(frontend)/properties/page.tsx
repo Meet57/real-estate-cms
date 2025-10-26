@@ -30,6 +30,7 @@ export default function PropertiesPage() {
             price={p.price}
             location={p.location}
             image={p.images?.[0]?.url}
+            amenities={p.amenities}
           />
         ))}
       </div>

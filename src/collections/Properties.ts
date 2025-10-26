@@ -26,8 +26,7 @@ const Properties: CollectionConfig = {
     },
     update: ({ req: { user } }) => {
       if (!user || user.collection !== 'users') return false
-      if (user.role == 'admin') return true
-      if (user.role !== 'seller') return false
+      if (user.role === 'admin') return true
       return {
         postedBy: {
           equals: user.id,
