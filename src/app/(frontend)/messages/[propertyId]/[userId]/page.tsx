@@ -96,7 +96,7 @@ export default function ChatPage() {
                   : 'bg-white border self-start'
               }`}
             >
-              <p className="break-words">{m.messageText}</p>
+              <p className="wrap-break-words">{m.messageText}</p>
               <span
                 className={`text-xs ${m.sender.id === user?.id ? 'text-blue-100' : 'text-gray-400'}`}
               >
