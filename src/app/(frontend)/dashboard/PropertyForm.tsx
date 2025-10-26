@@ -10,7 +10,7 @@ interface PropertyFormProps {
 }
 
 export default function PropertyForm({ property, onSaved }: PropertyFormProps) {
-  const { user } = useApp()
+  const { user, fetchAmenities, amenities } = useApp()
   const router = useRouter()
   const [title, setTitle] = useState(property?.title || '')
   const [description, setDescription] = useState(property?.description || '')
@@ -20,16 +20,17 @@ export default function PropertyForm({ property, onSaved }: PropertyFormProps) {
   const [bedrooms, setBedrooms] = useState(property?.bedrooms || 0)
   const [bathrooms, setBathrooms] = useState(property?.bathrooms || 0)
   const [size, setSize] = useState(property?.size || 0)
-  const [amenities, setAmenities] = useState<any[]>([])
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>(
     property?.amenities?.map((a: any) => a.id) || [],
   )
   const [loading, setLoading] = useState(false)
 
-  // Load amenities from Payload
+  // Load amenities from Payload only if not already loaded
   useEffect(() => {
-    api.get('/amenities').then((res) => setAmenities(res.data.docs))
-  }, [])
+    if (amenities.length === 0) {
+      fetchAmenities()
+    }
+  }, [amenities.length, fetchAmenities])
 
   const toggleAmenity = (id: string) => {
     setSelectedAmenities((prev) =>

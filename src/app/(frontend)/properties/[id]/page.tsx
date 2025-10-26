@@ -8,13 +8,13 @@ import { useApp } from '../../context/AppContext'
 
 export default function PropertyDetailPage() {
   const { id } = useParams()
-  const { user } = useApp()
+  const { user, fetchPropertyById } = useApp()
   const [property, setProperty] = useState<any | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   useEffect(() => {
     if (!id) return
-    api.get(`/properties/${id}`).then((res) => setProperty(res.data))
+    fetchPropertyById(id).then(setProperty)
   }, [id])
 
   if (!property) return <p className="p-8">Loading...</p>

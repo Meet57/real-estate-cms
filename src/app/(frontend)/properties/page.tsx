@@ -1,22 +1,15 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { api } from '../utils/api'
+import { useApp, Property } from '../context/AppContext'
 import PropertyCard from '../components/PropertyCard'
-
-interface Property {
-  id: string
-  title: string
-  price: number
-  location: string
-  images?: { url: string }[]
-}
 
 export default function PropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([])
+  const { fetchProperties } = useApp()
 
   useEffect(() => {
-    api.get('/properties').then((res) => setProperties(res.data.docs))
-  }, [])
+    fetchProperties().then((res) => setProperties(res))
+  }, [fetchProperties])
 
   return (
     <div className="p-8">
