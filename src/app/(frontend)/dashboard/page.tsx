@@ -1,4 +1,6 @@
+// app/dashboard/page.tsx
 'use client'
+
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { useApp } from '../context/AppContext'
@@ -8,13 +10,25 @@ export default function DashboardPage() {
   const { user, myProperties, fetchMyProperties, deleteProperty } = useApp()
 
   useEffect(() => {
-    if (user) fetchMyProperties()
-  }, [user])
+    if (user) {
+      fetchMyProperties()
+    }
+  }, [user, fetchMyProperties])
 
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm('Are you sure you want to delete this property?')
     if (!confirmed) return
     await deleteProperty(id)
+  }
+
+  // Redirect if not seller/admin
+  if (user && user.role !== 'seller' && user.role !== 'admin') {
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
+        <p>You must be a seller to access the dashboard.</p>
+      </div>
+    )
   }
 
   return (
@@ -31,7 +45,7 @@ export default function DashboardPage() {
 
       {/* Properties Grid */}
       {myProperties.length === 0 ? (
-        <p className="text-gray-600 text-center mt-10">You haven’t listed any properties yet.</p>
+        <p className="text-gray-600 text-center mt-10">You haven't listed any properties yet.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {myProperties.map((p) => (

@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Router from 'next/router'
 
 export const api = axios.create({
   baseURL: 'http://localhost:3000/api', // Payload backend URL
@@ -13,9 +12,9 @@ export const setToken = (token: string) => {
   api.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
 
-// 🚨 Intercept responses to catch auth errors
+// Intercept responses to catch auth errors
 api.interceptors.response.use(
-  (response) => response, // success
+  (response) => response,
   (error) => {
     const status = error?.response?.status
 

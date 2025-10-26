@@ -1,17 +1,19 @@
 'use client'
+
 import { useState, useEffect } from 'react'
-import { useApp } from '../context/AppContext'
-import { api } from '../utils/api'
 import { useRouter } from 'next/navigation'
+import { useApp } from '../context/AppContext'
+import type { Property } from '../context/AppContext'
 
 interface PropertyFormProps {
-  property?: any
+  property?: Property | null
   onSaved?: () => void
 }
 
 export default function PropertyForm({ property, onSaved }: PropertyFormProps) {
-  const { user, fetchAmenities, amenities } = useApp()
+  const { user, fetchAmenities, amenities, createProperty, updateProperty } = useApp()
   const router = useRouter()
+
   const [title, setTitle] = useState(property?.title || '')
   const [description, setDescription] = useState(property?.description || '')
   const [price, setPrice] = useState(property?.price || 0)
@@ -21,16 +23,16 @@ export default function PropertyForm({ property, onSaved }: PropertyFormProps) {
   const [bathrooms, setBathrooms] = useState(property?.bathrooms || 0)
   const [size, setSize] = useState(property?.size || 0)
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>(
-    property?.amenities?.map((a: any) => a.id) || [],
+    property?.amenities?.map((a) => a.id) || [],
   )
   const [loading, setLoading] = useState(false)
 
-  // Load amenities from Payload only if not already loaded
+  // Load amenities on mount
   useEffect(() => {
     if (amenities.length === 0) {
       fetchAmenities()
     }
-  }, [amenities.length, fetchAmenities])
+  }, [])
 
   const toggleAmenity = (id: string) => {
     setSelectedAmenities((prev) =>
@@ -40,7 +42,10 @@ export default function PropertyForm({ property, onSaved }: PropertyFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) return
+    if (!user) {
+      alert('You must be logged in to create/edit properties')
+      return
+    }
 
     setLoading(true)
     const payload = {
@@ -57,18 +62,13 @@ export default function PropertyForm({ property, onSaved }: PropertyFormProps) {
     }
 
     try {
-      if (property && property.id) {
-        await api.patch(`/properties/${property.id}`, payload)
-        alert('Property updated successfully!')
+      if (property?.id) {
+        await updateProperty(property.id, payload)
       } else {
-        await api.post('/properties', payload)
-        alert('Property created successfully!')
+        await createProperty(payload)
       }
 
-      // Optional callback
       if (onSaved) onSaved()
-
-      // Navigate back to dashboard
       router.push('/dashboard')
     } catch (err) {
       console.error(err)
@@ -199,7 +199,7 @@ export default function PropertyForm({ property, onSaved }: PropertyFormProps) {
         {/* Submit Button */}
         <button
           type="submit"
-          className="bg-blue-500 text-white px-6 py-3 rounded font-semibold hover:bg-blue-600 transition"
+          className="bg-blue-500 text-white px-6 py-3 rounded font-semibold hover:bg-blue-600 transition disabled:opacity-50"
           disabled={loading}
         >
           {loading ? 'Saving...' : property ? 'Update Property' : 'Create Property'}

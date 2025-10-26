@@ -1,3 +1,4 @@
+// app/dashboard/new/page.tsx
 'use client'
 
 import PropertyForm from "../PropertyForm"
