@@ -8,7 +8,7 @@ const Users: CollectionConfig = {
   },
   access: {
     read: ({ req: { user } }) => !!user,
-    create: ({ req: { user } }) => !!user && user.role !== 'admin', // only non-admins can register themselves
+    create: () => true,
     update: ({ req: { user }, id }) => {
       if (!user) return false
       if (user.role === 'admin') return true // admins can update anyone

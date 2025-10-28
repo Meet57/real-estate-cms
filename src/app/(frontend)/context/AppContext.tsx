@@ -73,6 +73,11 @@ interface AppContextProps {
   deleteProperty: (id: string) => Promise<void>
   fetchMessages: () => Promise<void>
   fetchAmenities: () => Promise<Amenity[]>
+  uploadMedia: (
+    files: File | File[],
+    metadata?: Record<string, any>,
+    onProgress?: (percent: number) => void,
+  ) => Promise<string[]>
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined)
@@ -259,6 +264,48 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [amenities.length])
 
+  const uploadMedia = async (
+    files: File | File[],
+    metadata: Record<string, any> = {},
+    onProgress?: (percent: number) => void,
+  ): Promise<string[]> => {
+    try {
+      const fileArray = Array.isArray(files) ? files : [files]
+      const uploadedIds: string[] = []
+
+      for (let i = 0; i < fileArray.length; i++) {
+        const file = fileArray[i]
+        const formData = new FormData()
+
+        formData.append('file', file)
+        // Set alt to filename if not provided in metadata
+        const payload = { ...metadata, alt: metadata.alt || file.name }
+        formData.append('_payload', JSON.stringify(payload))
+
+        const res = await api.post('/media', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+          onUploadProgress: (event) => {
+            if (event.total && onProgress) {
+              const percentCompleted = Math.round((event.loaded * 100) / event.total)
+              const overall = Math.round(((i + percentCompleted / 100) / fileArray.length) * 100)
+              onProgress(overall)
+            }
+          },
+        })
+
+        uploadedIds.push(res.data.doc.id)
+      }
+
+      return uploadedIds
+    } catch (err) {
+      console.error('Failed to upload media', err)
+      return []
+    }
+  }
+
   // Logout
   const logout = () => {
     setUser(null)
@@ -283,6 +330,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         register,
         logout,
         fetchProperties,
+        uploadMedia,
         amenities,
         fetchAmenities,
         fetchPropertyById,
