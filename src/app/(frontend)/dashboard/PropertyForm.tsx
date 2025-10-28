@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useApp } from '../context/AppContext'
 import type { Property } from '../context/AppContext'
+import FileUpload from '../components/FileUpload'
 
 interface PropertyFormProps {
   property?: Property | null
@@ -26,6 +27,9 @@ export default function PropertyForm({ property, onSaved }: PropertyFormProps) {
     property?.amenities?.map((a) => a.id) || [],
   )
   const [loading, setLoading] = useState(false)
+  const [imageIds, setImageIds] = useState<string[]>(
+    property?.images?.map((img: any) => img.id) || [],
+  )
 
   // Load amenities on mount
   useEffect(() => {
@@ -58,6 +62,7 @@ export default function PropertyForm({ property, onSaved }: PropertyFormProps) {
       bathrooms,
       size,
       amenities: selectedAmenities,
+      images: imageIds,
       postedBy: user.id,
     }
 
@@ -194,6 +199,18 @@ export default function PropertyForm({ property, onSaved }: PropertyFormProps) {
               </label>
             ))}
           </div>
+        </div>
+
+        {/* Image Upload */}
+        <div>
+          <FileUpload
+            label="Property Images"
+            multiple
+            onUpload={(ids) => setImageIds((prev) => [...prev, ...ids])}
+          />
+          {imageIds.length > 0 && (
+            <p className="text-sm text-gray-600 mt-2">{imageIds.length} image(s) selected</p>
+          )}
         </div>
 
         {/* Submit Button */}

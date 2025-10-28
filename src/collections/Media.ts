@@ -5,7 +5,9 @@ const Media: CollectionConfig = {
   upload: true,
   admin: { useAsTitle: 'filename' },
   access: { read: () => true },
-  fields: [{ name: 'alt', type: 'text', required: true }],
+  fields: [
+    { name: 'alt', type: 'text', required: true }, // this is case-sensitive!
+  ],
 }
 
 export default Media
