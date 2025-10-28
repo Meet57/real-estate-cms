@@ -26,8 +26,7 @@ const Messages: CollectionConfig = {
     { name: 'receiver', type: 'relationship', relationTo: 'users', required: true },
     { name: 'property', type: 'relationship', relationTo: 'properties' },
     { name: 'messageText', type: 'textarea', required: true },
-  ],
-  // TODO: delete handle for the messages after property is deleted
+  ]
 }
 
 export default Messages

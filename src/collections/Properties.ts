@@ -1,5 +1,6 @@
+import { equal } from 'assert'
 import type { CollectionConfig } from 'payload'
-import { tr } from 'payload/i18n/tr'
+import payload from 'payload'
 
 const Properties: CollectionConfig = {
   slug: 'properties',
@@ -7,17 +8,6 @@ const Properties: CollectionConfig = {
     useAsTitle: 'title',
   },
   access: {
-    // read: () => true, // public can read all properties
-    // create: () => true,
-    // update: ({ req: { user }, id }) => {
-    //   // Users can only update themselves
-    //   if (!user) return false
-    //   return user.id === id
-    // },
-    // delete: () => false, // users cannot delete themselves
-
-    // TODO: Put the comment one when done with development
-
     create: ({ req: { user } }) => {
       if (!user) return false
       // Only check role if user is from "users" collection
@@ -122,6 +112,24 @@ const Properties: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterDelete: [
+      async ({ req, doc }) => {
+        try {
+          await req.payload.delete({
+            collection: 'messages',
+            where: {
+              property: {
+                equals: doc.id,
+              },
+            },
+          })
+        } catch (err) {
+          payload.logger.error(`Failed to delete messages for property ${doc.id}`)
+        }
+      },
+    ],
+  },
 }
 
 export default Properties
